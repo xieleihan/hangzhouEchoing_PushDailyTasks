@@ -4,15 +4,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="307b72d3-2c99-432b-abc4-c58a116aac65" name="更改" comment="" />
+    <list default="true" id="307b72d3-2c99-432b-abc4-c58a116aac65" name="更改" comment="feat:邮箱推送">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "xieleihan"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/xieleihan/hangzhouEchoing_PushDailyTasks.git",
+    "accountId": "78ed2d4c-8001-4465-96f8-7405a7bfd9a9"
+  }
+}]]></component>
   <component name="ProjectColorInfo"><![CDATA[{
   "associatedIndex": 7
 }]]></component>
@@ -32,6 +54,13 @@
     "settings.editor.selected.configurable": "preferences.lookFeel"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ZhuanZ（无密码）\Documents\新建文件夹\hangzhouEchoing_PushDailyTasks\utils" />
+      <recent name="C:\Users\ZhuanZ（无密码）\Documents\新建文件夹\hangzhouEchoing_PushDailyTasks\assets\images" />
+      <recent name="C:\Users\ZhuanZ（无密码）\Documents\新建文件夹\hangzhouEchoing_PushDailyTasks\assets\apk" />
+    </key>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -47,6 +76,87 @@
       <option name="presentableId" value="Default" />
       <updated>1751860401267</updated>
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <option name="closed" value="true" />
+      <created>1751864078549</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1751864078549</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat:增加自动获取token的能力">
+      <option name="closed" value="true" />
+      <created>1751866632057</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1751866632057</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat:增加workflows">
+      <option name="closed" value="true" />
+      <created>1751866908998</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1751866908998</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix:修复workflows">
+      <option name="closed" value="true" />
+      <created>1751867139503</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1751867139503</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix:修复workflows">
+      <option name="closed" value="true" />
+      <created>1751868754726</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1751868754726</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix:修复workflows">
+      <option name="closed" value="true" />
+      <created>1751871004966</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1751871004966</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fix:修复workflows">
+      <option name="closed" value="true" />
+      <created>1751871694685</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1751871694685</updated>
+    </task>
+    <task id="LOCAL-00008" summary="feat:邮箱推送">
+      <option name="closed" value="true" />
+      <created>1751877881792</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1751877881792</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat:邮箱推送">
+      <option name="closed" value="true" />
+      <created>1751878986595</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1751878986595</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <MESSAGE value="feat:增加自动获取token的能力" />
+    <MESSAGE value="feat:增加workflows" />
+    <MESSAGE value="fix:修复workflows" />
+    <MESSAGE value="feat:邮箱推送" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat:邮箱推送" />
   </component>
 </project>
