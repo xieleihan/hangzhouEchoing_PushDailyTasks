@@ -10,6 +10,8 @@ from collections import OrderedDict
 from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 import os
+import markdown
+from utils.MailConfig import send_email
 
 load_dotenv()
 
@@ -632,6 +634,10 @@ if __name__ == "__main__":
 
     # 合并所有部分为一个字符串
     full_markdown_content = "\n".join(feishu_markdown_parts)
+
+    html_content = markdown.markdown(full_markdown_content,extensions=['tables', 'fenced_code'])
+
+    send_email(html_content)
 
     # 定义输出文件路径（当前目录下的 output_summary.md）
     output_file_path = "README.md"
