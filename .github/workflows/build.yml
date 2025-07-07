@@ -52,15 +52,21 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: Check if README.md was updated
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Git Pull Before Push
         run: |
-          git diff
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git pull --rebase --autostash origin main
 
-          git add README.md
-
-          if git diff --cached --exit-code; then
-            echo "⚠️ 没有变化，跳过提交"
-          else
-            git commit -m "Auto update README.md [skip ci]"
-            git push
-          fi
+          - name: 推送新 README.md
+            uses: stefanzweifel/git-auto-commit-action@v5
+            with:
+              commit_message: "Auto update README"
+              branch: main
+              commit_user_name: github-actions
+              commit_user_email: github-actions@github.com
