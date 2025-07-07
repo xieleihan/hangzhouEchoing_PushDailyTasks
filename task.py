@@ -11,10 +11,10 @@ from datetime import datetime, date, timedelta
 from dotenv import load_dotenv
 import os
 import markdown
-from utils.MailConfig import send_email
 
 load_dotenv()
 
+from utils.MailConfig import send_email
 # Suppress warnings
 from urllib3.exceptions import InsecureRequestWarning
 warnings.simplefilter('ignore', InsecureRequestWarning)
@@ -36,8 +36,8 @@ headers = {
 }
 
 session = requests.Session()
-login_data = {
     "userName": username,
+login_data = {
     "password": password,
     "loginType": login_type
 }
