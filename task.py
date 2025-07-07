@@ -7,7 +7,11 @@ import argparse
 from tabulate import tabulate
 import sys
 from collections import OrderedDict
-import datetime
+from datetime import datetime, date, timedelta
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # Suppress warnings
 from urllib3.exceptions import InsecureRequestWarning
@@ -17,9 +21,66 @@ warnings.simplefilter('ignore', InsecureRequestWarning)
 # API_BASE_URL = 'http://platform.localtest.echoing.cc:61002/api/v1'
 # ACCESS_TOKEN = 'd16c37694f6b4a65a597d6873181e7cd'
 #
-API_BASE_URL = 'http://platform.echoing.cc/api/v1'
-ACCESS_TOKEN = '9fb55a526e09465ca8b3f2eb5aaf0bc7'
+login_url = os.getenv("LOGIN_URL")
 
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
+login_type = int(os.getenv("LOGIN_TYPE", "2"))
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36',
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+}
+
+session = requests.Session()
+login_data = {
+    "userName": username,
+    "password": password,
+    "loginType": login_type
+}
+
+response = session.post(
+    login_url,
+    json=login_data,
+    headers=headers,
+    allow_redirects=True,
+    verify=False  # 仅用于测试，生产环境建议使用真实证书
+)
+
+if response.status_code == 200:
+    try:
+        json_response = response.json()
+        print("✅ 登录响应:", json_response)
+
+        if json_response.get("success") is True:
+            data = json_response.get("data", {})
+            token = data.get("token") if isinstance(data, dict) else None
+
+            if token:
+                ACCESS_TOKEN = token
+                print("🔑 成功获取 Token:", ACCESS_TOKEN)
+
+            else:
+                print("❌ 未找到 token 字段，请检查返回结构")
+                sys.exit(1)
+
+        else:
+            msg = json_response.get("msg", "未知错误")
+            trace_id = json_response.get("traceId", "无追踪ID")
+            print(f"❌ 登录失败: {msg} (Trace ID: {trace_id})")
+            sys.exit(1)
+
+    except requests.exceptions.JSONDecodeError:
+        print("⚠️ 响应不是有效的 JSON")
+        print("原始响应内容:", response.text)
+        sys.exit(1)
+else:
+    print(f"❌ 登录失败，状态码：{response.status_code}")
+    print("响应内容:", response.text)
+    sys.exit(1)
+
+API_BASE_URL = os.getenv('API_BASE_URL')
 
 TASK_API_URL = f'{API_BASE_URL}/ctrlTaskMng/page'
 ENUM_API_URL = f'{API_BASE_URL}/dict/all'
@@ -30,8 +91,18 @@ EVENT_TYPES = None
 EXCEPTION_TYPE_NAMES = None
 
 # Default time range (can be overridden if needed)
-taskCreateStartTime = "2025-06-15 00:00:00"
-taskCreateEndTime = "2025-06-16 00:00:00"
+now = datetime.now()
+print('当前时间:', now)
+
+# 获取今天的 00:00:00
+today_midnight = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+# 昨天的 00:00:00
+yesterday_midnight = today_midnight - timedelta(days=1)
+
+# 设置任务时间范围
+taskCreateStartTime = yesterday_midnight.strftime("%Y-%m-%d %H:%M:%S")
+taskCreateEndTime = today_midnight.strftime("%Y-%m-%d %H:%M:%S")
 
 # Shared Headers
 BASE_HEADERS = { 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'zh_CN', 'Cache-Control': 'no-cache',
@@ -471,7 +542,7 @@ if __name__ == "__main__":
     console_outputs = []
     feishu_markdown_parts = []
     report_title_base = "任务分析报告"
-    report_date_str = datetime.date.today().strftime("%Y-%m-%d")
+    report_date_str = date.today().strftime("%Y-%m-%d")
     report_title = "" # Will be set based on scope
 
     # --- Main Logic ---
