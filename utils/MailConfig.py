@@ -7,7 +7,8 @@ import os
 load_dotenv()
 
 smtp_server = os.getenv("SMTP_SERVER")
-smtp_port = int(os.getenv("SMTP_PORT"))
+smtp_port_str = os.getenv("SMTP_PORT")
+smtp_port = int(smtp_port_str)
 sender_email = os.getenv("SENDER_EMAIL")
 sender_password = os.getenv("SENDER_PASSWORD")
 receiver_email = os.getenv("RECEIVER_EMAIL")
