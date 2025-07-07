@@ -1,17 +1,28 @@
-name: Run Daily Script
+name: Run Daily Script and Update README
 
 on:
+  # 每天凌晨 3 点 (UTC 时间) 自动运行
   schedule:
-    - cron: "0 3 * * *"  # 每天 UTC 时间凌晨 3 点运行
+    - cron: "0 3 * * *"
+
+  # 允许手动触发
   workflow_dispatch:
+
+  # 当推送到 main 分支时也运行
   push:
-      branches: [ main ]
+    branches:
+      - main
+
+  # PR 到 main 分支时也运行
   pull_request:
-      branches: [ main ]
+    branches:
+      - main
 
 jobs:
   run_script:
     runs-on: ubuntu-latest
+    name: Run Python Script and Update README
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,13 +37,30 @@ jobs:
           pip install --upgrade pip
           pip install requests python-dotenv tabulate
 
-      - name: Run script
+      - name: Run Python script
         env:
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
           LOGIN_TYPE: ${{ secrets.LOGIN_TYPE }}
-          LOGIN_URL: ${{secrets.LOGIN_URL}}
-          API_BASE_URL: ${{secrets.API_BASE_URL}}
-
+          LOGIN_URL: ${{ secrets.LOGIN_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: |
           python task.py
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Check if README.md was updated
+        run: |
+          git diff
+
+          git add README.md
+
+          if git diff --cached --exit-code; then
+            echo "⚠️ 没有变化，跳过提交"
+          else
+            git commit -m "Auto update README.md [skip ci]"
+            git push
+          fi

@@ -630,6 +630,18 @@ if __name__ == "__main__":
     print('\n'.join(console_outputs))
     print("\n" + "="*60 + "\n--- 完整报告结束 (控制台输出) ---" + "\n" + "="*60)
 
+    # 合并所有部分为一个字符串
+    full_markdown_content = "\n".join(feishu_markdown_parts)
+
+    # 定义输出文件路径（当前目录下的 output_summary.md）
+    output_file_path = "README.md"
+
+    # 写入文件
+    with open(output_file_path, "w", encoding="utf-8") as f:
+        f.write(full_markdown_content)
+
+    print(f"✅ Markdown 文件已保存至: {output_file_path}")
+
     # --- Call Feishu Sending Function (Refactored) ---
     if send_to_feishu_flag:
         print("\n" + "="*60 + "\n--- 发送到飞书 ---" + "\n" + "="*60)
