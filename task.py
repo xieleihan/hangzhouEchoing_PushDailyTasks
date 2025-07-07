@@ -36,8 +36,8 @@ headers = {
 }
 
 session = requests.Session()
-    "userName": username,
 login_data = {
+    "userName": username,
     "password": password,
     "loginType": login_type
 }
