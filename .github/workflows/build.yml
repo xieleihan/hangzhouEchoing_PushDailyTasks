@@ -59,3 +59,4 @@ jobs:
           commit_user_name: github-actions
           commit_user_email: github-actions@github.com
           file_pattern: README.md
+          pull_before_commit: true
