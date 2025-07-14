@@ -28,6 +28,7 @@ login_url = os.getenv("LOGIN_URL")
 username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
 login_type = int(os.getenv("LOGIN_TYPE", "2"))
+webhook_url = os.getenv('WEBHOOK_URL')
 
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36',
@@ -652,7 +653,7 @@ if __name__ == "__main__":
     html_content = markdown.markdown(full_markdown_content,extensions=['tables', 'fenced_code'])
 
     # webhook_url = ''
-    webhook_url = os.getenv('WEBHOOK_URL')
+
     message_body = build_feishu_post_message(summary_table_md, taskCreateStartTime, taskCreateEndTime)
     response = requests.post(webhook_url, data=json.dumps(message_body))
     if response.status_code == 200:
