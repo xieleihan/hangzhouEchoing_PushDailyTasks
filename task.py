@@ -516,6 +516,20 @@ def format_event_type_report_markdown(event_type_results, add_main_header=False,
 
     return "\n".join(report_parts)
 
+def build_feishu_post_message(markdown_content,taskCreateStartTime, taskCreateEndTime):
+    # 获取时间范围,拼接成字符串
+    feishuStr = f"测试脚本运行时间: {taskCreateStartTime} 至 {taskCreateEndTime}\n\n"
+
+    # 拼接 Markdown 内容
+    markdown_content = feishuStr + markdown_content
+    
+    return {
+        "msg_type": "text",
+        "content": {
+            "text": markdown_content
+        }
+    }
+
 # --- 主执行块 ---
 if __name__ == "__main__":
 
@@ -636,6 +650,14 @@ if __name__ == "__main__":
     full_markdown_content = "\n".join(feishu_markdown_parts)
 
     html_content = markdown.markdown(full_markdown_content,extensions=['tables', 'fenced_code'])
+
+    # webhook_url = ''
+    webhook_url = os.getenv('WEBHOOK_URL')
+    message_body = build_feishu_post_message(summary_table_md, taskCreateStartTime, taskCreateEndTime)
+    response = requests.post(webhook_url, data=json.dumps(message_body))
+    if response.status_code == 200:
+        print("✅ 汇总数据已成功发送到飞书。")
+        print(response)
 
     send_email(html_content)
 
