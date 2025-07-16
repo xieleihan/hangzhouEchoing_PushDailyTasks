@@ -108,7 +108,7 @@ session = requests.Session()
 session.headers.update(BASE_HEADERS)
 
 # 找不到控件的函数
-def controlNotFoundFetchData():
+def controlNotFoundFetchData(input_str: str = "") -> str:
     try:
         response = session.post(PLATFORM_BASE_API_ALL, json=found(3), timeout=10)
         if response.status_code == 200:
@@ -133,7 +133,7 @@ def controlNotFoundFetchData():
                     print("提取的任务ID:", task_ids)
                     # return task_ids
                     TryAgain(task_ids)
-
+                    return f"✅ 成功重试以下任务ID: {task_ids}"
                 else:
                     print("data['data']['data'] 不是列表")
             else:
@@ -256,5 +256,3 @@ def TryAgain(taskIds):
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-
-controlNotFoundFetchData()

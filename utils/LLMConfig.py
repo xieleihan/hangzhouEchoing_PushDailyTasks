@@ -2,12 +2,38 @@ import os
 
 from openai import OpenAI
 from dotenv import load_dotenv
+from utils.TryAgain import controlNotFoundFetchData
+from langchain.agents import initialize_agent, AgentType
+from langchain.chat_models import ChatOpenAI
+from langchain.chains.conversation.memory import ConversationBufferMemory
+from langchain.tools import Tool
+
 load_dotenv()
 
-client = OpenAI(
+# 工具函数
+tools = [
+    Tool(
+        name="controlNotFoundFetchData",
+        func=controlNotFoundFetchData,
+        description="尝试重试控件找不到的任务"
+    )
+]
+
+# 初始化 LLM
+llm = ChatOpenAI(
     api_key= os.getenv('OPENAI_API_KEY'),
-    base_url = os.getenv('OPENAI_API_BASE_URL')
+    base_url = os.getenv('OPENAI_API_BASE_URL'),
+    model="deepseek-chat",
+    temperature=0,
 )
+
+# 开启记忆
+memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True, output_key="output")
+
+# client = OpenAI(
+#     api_key= os.getenv('OPENAI_API_KEY'),
+#     base_url = os.getenv('OPENAI_API_BASE_URL')
+# )
 
 prompt = '''
     你是一个专业的数据分析师和前端工程师（增长工程方向），擅长结合数据分析与 Auto.js 实践来解决自动化脚本中的问题。
@@ -31,18 +57,35 @@ prompt = '''
 
 请以如下格式输出完整回答：
 
-### 数据分析结论（按平台列出）
+### 数据分析结论
 - 平台 A: 主要失败原因 + 是否需关注
 - 平台 B: ...
+
+回答后,如果发现高频失败项目是控件找不到,请主动调用 controlNotFoundFetchData 工具来重试下控件找不到的任务。
 '''
 
+# def getLLMRespoense(content):
+#     response = client.chat.completions.create(
+#         model="deepseek-chat",
+#         messages=[
+#             {"role": "system", "content": f"{prompt}"},
+#             {"role": "user", "content": f"{content}"},
+#         ],
+#         stream=False
+#     )
+#     return response.choices[0].message.content
+
 def getLLMRespoense(content):
-    response = client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[
-            {"role": "system", "content": f"{prompt}"},
-            {"role": "user", "content": f"{content}"},
-        ],
-        stream=False
+    agent = initialize_agent(
+        tools=tools,
+        llm=llm,
+        agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        memory=memory,
+        verbose=True,
+        agent_kwargs = {
+            "system_message": prompt
+        }
     )
-    return response.choices[0].message.content
+
+    response = agent.run(content)
+    return response
