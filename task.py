@@ -15,6 +15,7 @@ import markdown
 load_dotenv()
 
 from utils.MailConfig import send_email
+from utils.LLMConfig import getLLMRespoense
 # Suppress warnings
 from urllib3.exceptions import InsecureRequestWarning
 warnings.simplefilter('ignore', InsecureRequestWarning)
@@ -517,17 +518,87 @@ def format_event_type_report_markdown(event_type_results, add_main_header=False,
 
     return "\n".join(report_parts)
 
-def build_feishu_post_message(markdown_content,taskCreateStartTime, taskCreateEndTime):
-    # 获取时间范围,拼接成字符串
-    feishuStr = f"测试脚本运行时间: {taskCreateStartTime} 至 {taskCreateEndTime}\n\n"
+def build_feishu_post_message(markdown_content):
 
-    # 拼接 Markdown 内容
-    markdown_content = feishuStr + markdown_content
-    
     return {
-        "msg_type": "text",
+        "msg_type": "post",
         "content": {
-            "text": markdown_content
+            "post": {
+                "zh_cn": {
+                    "title": "任务分析报告[beta版]",
+                    "content": [
+                        [
+                            {
+                                "tag": "text",
+                                "text": markdown_content
+                            }
+                        ]
+                    ]
+                }
+            }
+        }
+    }
+
+def parse_markdown_table(markdown: str):
+    lines = [line.strip() for line in markdown.strip().split('\n') if '|' in line]
+    headers = [h.strip() for h in lines[0].split('|')[1:-1]]
+    data_rows = [
+        [cell.strip() for cell in row.split('|')[1:-1]]
+        for row in lines[2:]  # skip header and separator
+    ]
+    return headers, data_rows
+
+def build_feishu_post_from_markdown_table(markdown_table,taskCreateStartTime, taskCreateEndTime):
+    headers, rows = parse_markdown_table(markdown_table)
+
+    feishu_content = [
+        [
+            {"tag": "text", "text": f"脚本运行时间: {taskCreateStartTime} 至 {taskCreateEndTime}"}
+        ],
+        [
+            {"tag": "text", "text": "\n 平台运行结果汇总："}
+        ]
+    ]
+
+    for row in rows:
+        platform = row[0]
+        total = row[1]
+        success = row[2]
+        fail = row[3]
+        success_rate = row[4]
+        fail_rate = row[5]
+        top1 = row[6]
+        top2 = row[7]
+        top3 = row[8]
+
+        if total == "0":
+            feishu_content.append([
+                {"tag": "text", "text": f"\n {platform}: 无运行数据"}
+            ])
+            continue
+
+        summary = f"\n🟢 {platform}: 成功 {success} / {total}, 成功率 {success_rate}, 失败率 {fail_rate}"
+        feishu_content.append([{"tag": "text", "text": summary}])
+
+        for idx, top_err in enumerate([top1, top2, top3], start=1):
+            if top_err != "无":
+                feishu_content.append([
+                    {"tag": "text", "text": f"Top {idx} 异常: {top_err}"}
+                ])
+            else:
+                feishu_content.append([
+                    {"tag": "text", "text": f"Top {idx} 异常: 无"}
+                ])
+
+    return {
+        "msg_type": "post",
+        "content": {
+            "post": {
+                "zh_cn": {
+                    "title": "任务分析报告",
+                    "content": feishu_content
+                }
+            }
         }
     }
 
@@ -653,9 +724,14 @@ if __name__ == "__main__":
     html_content = markdown.markdown(full_markdown_content,extensions=['tables', 'fenced_code'])
 
     # webhook_url = ''
-
-    message_body = build_feishu_post_message(summary_table_md, taskCreateStartTime, taskCreateEndTime)
+    llmstr = getLLMRespoense(full_markdown_content)
+    message_body = build_feishu_post_from_markdown_table(summary_table_md, taskCreateStartTime, taskCreateEndTime)
     response = requests.post(webhook_url, data=json.dumps(message_body))
+    if response.status_code == 200:
+        print("✅ 汇总数据已成功发送到飞书。")
+        print(response)
+    new_message_body = build_feishu_post_message(llmstr)
+    response = requests.post(webhook_url, data=json.dumps(new_message_body))
     if response.status_code == 200:
         print("✅ 汇总数据已成功发送到飞书。")
         print(response)
