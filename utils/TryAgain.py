@@ -194,31 +194,45 @@ def networkNotFoundFetchData():
         if response.status_code == 200:
             data = response.json()
 
-            # 确保路径存在且为列表
-            if 'data' in data and isinstance(data['data'], dict):
-                outer_data = data['data'].get('data', [])
-                print("提取的原始数据:", outer_data)
+            task_ids = []
 
-                if isinstance(outer_data, list):
-                    task_ids = []
+            # 第一种情况：data.data.data 是列表
+            if (
+                'data' in data and
+                isinstance(data['data'], dict) and
+                'data' in data['data'] and
+                isinstance(data['data']['data'], list)
+            ):
+                outer_data = data['data']['data']
 
-                    for item in outer_data:
-                        if isinstance(item, dict) :
-                            task_id = item.get('taskId')
-                            if task_id is not None:
-                                task_ids.append(task_id)
-                    print("提取的任务ID:", task_ids)
-                    return task_ids
+                for item in outer_data:
+                    if isinstance(item, dict):
+                        task_id = item.get('taskId')
+                        id = item.get('id')
+                        if task_id is not None:
+                            task_ids.append(task_id)
+                        else:
+                            task_ids.append(id)
 
-                else:
-                    print("data['data']['data'] 不是列表")
+                print("提取的任务ID:", task_ids)
+                TryAgain(task_ids)
+                return task_ids
+
+            # 第二种情况：data 本身是一个包含 id 的字典
+            elif 'id' in data:
+                task_id = data.get('id')
+                if task_id is not None:
+                    task_ids.append(task_id)
+                print("提取的任务ID:", task_ids)
+                return task_ids
+
             else:
                 print("没有找到有效的数据")
+                return []
 
         else:
             print("请求失败，状态码:", response.status_code)
-
-        return []  # 默认返回空列表
+            return []
 
     except requests.RequestException as e:
         print("请求异常:", e)

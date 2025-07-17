@@ -2,7 +2,7 @@ import os
 
 from openai import OpenAI
 from dotenv import load_dotenv
-from utils.TryAgain import controlNotFoundFetchData
+from utils.TryAgain import controlNotFoundFetchData,networkNotFoundFetchData
 from langchain.agents import initialize_agent, AgentType
 from langchain.chat_models import ChatOpenAI
 from langchain.chains.conversation.memory import ConversationBufferMemory
@@ -16,6 +16,11 @@ tools = [
         name="controlNotFoundFetchData",
         func=controlNotFoundFetchData,
         description="尝试重试控件找不到的任务"
+    ),
+    Tool(
+        name="networkNotFoundFetchData",
+        func=networkNotFoundFetchData,
+        description="尝试重试网络不通的任务"
     )
 ]
 
@@ -55,13 +60,14 @@ prompt = '''
     最终给出一个简明结论：  
     > "**[平台名]** 的脚本失败主要由 [失败类型] 引起，建议重点关注 / 暂不优先处理"
 
-请以如下格式输出完整回答：
+请以中文并且以如下格式输出完整回答：
 
 ### 数据分析结论
 - 平台 A: 主要失败原因 + 是否需关注
 - 平台 B: ...
 
-回答后,如果发现高频失败项目是控件找不到,请主动调用 controlNotFoundFetchData 工具来重试下控件找不到的任务。
+回答后,如果发现高频失败项目是控件找不到,请主动调用 controlNotFoundFetchData 工具来重试下控件找不到的任务;如果发现高频失败项目是网络不通,请主动调用 networkNotFoundFetchData 工具来重试下网络不通的任务。
+只能在最高高频失败的时候调用其中一个工具，不能同时调用所有工具。
 '''
 
 # def getLLMRespoense(content):
